@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -71,8 +72,12 @@ class RandomVariableTester:
         segments = np.arange(0, 1 + step, step)
 
         for number in self.list_random:
-            end = [i for i in segments if number < i][0]
-            hits_segments.append((round(end-step, 10), round(end, 10)))
+            for i in segments:
+                if number < i:
+                    end = i
+                    break
+            hits_segments.append(
+                (float(str(end-step)[:3]), float(str(end)[:3])))
 
         hits = Counter(hits_segments)
         return {k: (v / self.len_random) for k, v in hits.items()}
@@ -91,10 +96,11 @@ class RandomVariableTester:
 
 
 def main():
-    start, bit, quantity = 19941995, 16, 10000
+    start, bit, quantity = 19941995, 16, 100000
     m, k = 2**31, 16807
     intervals = 10
     s = 10
+    start_time = time.time()
 
     m1 = RandomVariableSensor(quantity).midsquare_method(start, bit)
     m2 = RandomVariableSensor(quantity).mult_congruent_method(start, m, k)
@@ -121,6 +127,8 @@ def main():
 
     print('\nCorrelation Mult-cong method:')
     print(RandomVariableTester(intervals, m2).independence_testing(s))
+
+    print(f'\nLead time: {time.time() - start_time}s')
 
     fig, axs = plt.subplots(1, 2, sharey=True, tight_layout=True)
 
