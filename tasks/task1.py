@@ -1,4 +1,5 @@
 import time
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -66,6 +67,9 @@ class RandomVariableTester:
         D = self._dispersion(1 / len(y), x, M)
         return self._correl_coeff(M, D, x, y)
 
+    def rounding(self, number: float) -> float:
+        return float(str(number)[:2 + math.ceil(self.intervals / 10)])
+
     def hits_rate(self) -> dict:
         hits_segments = []
         step = 1 / self.intervals
@@ -76,8 +80,8 @@ class RandomVariableTester:
                 if number < i:
                     end = i
                     break
-            hits_segments.append(
-                (float(str(end-step)[:3]), float(str(end)[:3])))
+            hits_segments.append((
+                self.rounding(end-step), self.rounding(end)))
 
         hits = Counter(hits_segments)
         return {k: (v / self.len_random) for k, v in hits.items()}
