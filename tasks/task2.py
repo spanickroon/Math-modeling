@@ -30,17 +30,18 @@ class GenerationRandomVariables:
         return math.exp(-x - y)
 
     def neumann_method(self, a: float, b: float) -> list:
-        return [self.generate_xy() for i in range(self.number_amount)]
+        return [self.generate_xy(a, b) for i in range(self.number_amount)]
 
-    def generate_xy(self) -> tuple:
+    def generate_xy(self, a: float, b: float) -> tuple:
         m, k = 2**31, 16807
         start = random.randint(10**8, 10**9)
         value = random.randint(10**8, 10**9)
 
         xy = RandomVariableSensor(2).mult_congruent_method(start, m, k)
-        w = random.random()
+        w = random.random() * 1
+        xy = (a + xy[0]*(b - a), xy[1])
 
-        return xy if w <= self.density(*xy) else self.generate_xy()
+        return xy if w <= self.density(*xy) else self.generate_xy(a, b)
 
     def correlation(
             self, x: list, y: list,
@@ -152,9 +153,6 @@ def main():
     print('\nCorrelation coefficient XY:')
     print(generator.correlation(x, y, m_x, m_y, d_x, d_y))
 
-    print('\nTheoretical correlation coefficient XY:')
-    print(generator.correlation(x, y, m_t, m_t, d_t, d_t))
-
     fig, axs = plt.subplots(1, 2, sharey=True, tight_layout=True)
     axs[0].set_yticks(np.arange(0, 1, 0.02), minor=False)
 
@@ -223,7 +221,9 @@ def main():
     axs.plot(x, y, 'o-')
     axs.set_title('Distribution function F(X):')
 
-    fig, axs = plt.subplots(1, len(distribution_y), sharey=True, tight_layout=True)
+    fig, axs = plt.subplots(
+        1, len(distribution_y),
+        sharey=True, tight_layout=True)
 
     for i, distribution in enumerate(distribution_y):
         x, y = generator.construction_distrib_func(vector_y, distribution)
