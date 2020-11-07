@@ -48,3 +48,4 @@ f(x, y)= 3*e^(−x−y), ∀(x, y): 0 <= x, y <= ∞.
 Лабораторная без вариантов. 
 
 ```
+![image](https://user-images.githubusercontent.com/37241257/98452007-5f080100-215c-11eb-8842-beb0f5f71d9a.png)
