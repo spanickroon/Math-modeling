@@ -18,20 +18,18 @@ class RandomProcess:
     def temporary_generation(self) -> list:
         return np.arange(0, self.step, self.tau)
 
-    def weight_func(self):
-        return 1
-
     def sliding_func(self, k: int) -> list:
-        return [self.weight_func() * self.noise[n - k] for n in range(1, k+1)]
+        f = self.autocorrelation_func
+        return [f(self.tau * n) * self.noise[n - k] for n in range(1, k + 1)]
 
     def sliding_summation(self) -> list:
         return [sum(self.sliding_func(k)) for k in range(self.size)]
 
-    def autocorrelation_func(self) -> float:
-        return self.dispersion * np.exp(-self.alpha * np.abs(self.tau)) * \
+    def autocorrelation_func(self, tau: int) -> float:
+        return self.dispersion * np.exp(-self.alpha * np.abs(tau)) * \
             (
                 1 + self.alpha * np.abs(self.tau) +
-                (self.alpha ** 2 * self.tau ** 2) / 3
+                (self.alpha ** 2 * tau ** 2) / 3
             )
 
     def expected_value(self, sequence: list) -> float:
@@ -56,11 +54,16 @@ def calculations(process: object) -> None:
 
 
 def plotting(process: object) -> None:
-    x, y = process.temporary_generation(), process.sliding_summation()
-
     fig, axs = plt.subplots(1, 2, sharey=True, tight_layout=True)
-    axs[0].scatter(range(len(process.noise)), process.noise)
-    axs[1].plot(x, y)
+
+    x, y = range(len(process.noise)), process.noise
+    axs[0].scatter(x, y, c=np.random.rand(process.size))
+
+    x, y = process.temporary_generation(), process.sliding_summation()
+    axs[1].plot(x, y, c='green')
+
+    axs[0].set_title('White noise')
+    axs[1].set_title('Random process')
     plt.show()
 
 
