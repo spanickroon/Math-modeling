@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 class RandomProcess:
 
-    def __init__(self, size: int, dispersion: int, alpha: int, step: int):
+    def __init__(self, size: int, dispersion: float, alpha: float, step: int):
         self.size = size
         self.dispersion = dispersion
         self.alpha = alpha
@@ -59,7 +59,7 @@ def timer(func: object):
     return wrapper
 
 
-def correlation_coeff(process: object, step_1: int, step_2: int):
+def correlation_coeff(process: object, step_1: int, step_2: int) -> float:
     size, dispersion, alpha = list(process.__dict__.values())[:3]
 
     process_1 = RandomProcess(size, dispersion, alpha, step_1)
